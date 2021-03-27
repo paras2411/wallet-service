@@ -15,4 +15,16 @@ public class WalletService {
 
         return walletRepository.save(wallet);
     }
+
+    public Wallet findByCustId(int custId) {
+        return walletRepository.findByCustId(custId);
+    }
+
+    public void addWallet(int custId, int amount) {
+        walletRepository.addWallet(custId, amount);
+    }
+
+    public void updateWallet(int custId, int amountUpdate) {
+        walletRepository.updateWallet(custId, amountUpdate);
+    }
 }
