@@ -16,7 +16,6 @@ import javax.persistence.Id;
 public class Wallet {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int custId;
     private int walletAmount;
 }

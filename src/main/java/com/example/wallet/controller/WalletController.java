@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Scanner;
 
 @RestController
-@RequestMapping("/wallet")
+@RequestMapping("")
 @Slf4j
 public class WalletController {
 
@@ -26,6 +26,16 @@ public class WalletController {
         return walletService.save(wallet);
     }
 
+    @GetMapping("/feedInitialData")
+    public void addInitialCustomers(){
+        walletService.feedInitialData();
+    }
+
+    @GetMapping("/addCustomer")
+    public void addCustomer(@RequestParam int custId) {
+        walletService.addCustomer(custId);
+    }
+
     @GetMapping("/balance")
     public int getBalance(@RequestParam int custId) {
 
@@ -33,7 +43,7 @@ public class WalletController {
         return wallet.getWalletAmount();
     }
 
-    @GetMapping("/deduct-amount")
+    @GetMapping("/deductAmount")
     public boolean deductAmount(@RequestParam int custId,
                                 @RequestParam int amount) {
 
@@ -46,7 +56,7 @@ public class WalletController {
         return false;
     }
 
-    @GetMapping("/add-amount")
+    @GetMapping("/addAmount")
     public boolean addAmount(@RequestParam int custId,
                              @RequestParam int amount) {
 
@@ -58,35 +68,6 @@ public class WalletController {
     @GetMapping("/reset")
     public void reset() {
 
-        File file = new File("/Users/paraslohani/Documents/IISc/PoDS/input.txt");
-        try {
-            Scanner scan = new Scanner(file);
-            List<Integer> customers = new ArrayList<Integer>();
-            int initialAmount = 0;
-            int counter = 0;
-            while(scan.hasNextLine()) {
-                String cur = scan.nextLine();
-                if(cur.equals("****")) {
-                    counter++;
-                }
-                else {
-                    if(counter == 2) {
-                        customers.add(Integer.parseInt(cur));
-                    }
-                    else if(counter == 3) {
-                        initialAmount = Integer.parseInt(cur);
-                        break;
-                    }
-                }
-            }
-            for(Integer customer: customers) {
-                walletService.addWallet(customer, initialAmount);
-            }
-        }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-            log.info("File input.txt not found");
-        }
-
+        walletService.updateAllWallet();
     }
 }

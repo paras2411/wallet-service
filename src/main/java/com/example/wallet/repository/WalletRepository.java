@@ -15,12 +15,12 @@ public interface WalletRepository extends JpaRepository<Wallet, Integer> {
     Wallet findByCustId(int custId);
 
     @Modifying
-    @Query(value = "insert into Wallet values (?1, ?2)", nativeQuery = true)
-    @Transactional
-    void addWallet(int custId, int amount);
-
-    @Modifying
     @Query("update Wallet w set w.walletAmount = ?2 where w.custId = ?1")
     @Transactional
     void updateWallet(int custId, int amountUpdate);
+
+    @Modifying
+    @Query("update Wallet w set w.walletAmount = ?1")
+    @Transactional
+    void updateAllWallet(int amountUpdate);
 }
