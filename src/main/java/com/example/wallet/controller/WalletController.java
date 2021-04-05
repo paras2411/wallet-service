@@ -6,12 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-
 @RestController
 @RequestMapping("")
 @Slf4j
@@ -36,7 +30,7 @@ public class WalletController {
         walletService.addCustomer(custId);
     }
 
-    @GetMapping("/balance")
+    @GetMapping("/getBalance")
     public int getBalance(@RequestParam int custId) {
 
         Wallet wallet = walletService.findByCustId(custId);
@@ -46,6 +40,8 @@ public class WalletController {
     @GetMapping("/deductAmount")
     public boolean deductAmount(@RequestParam int custId,
                                 @RequestParam int amount) {
+
+        if(amount <= 0) return false;
 
         Wallet wallet = walletService.findByCustId(custId);
         int walletAmount = wallet.getWalletAmount();
@@ -59,6 +55,8 @@ public class WalletController {
     @GetMapping("/addAmount")
     public boolean addAmount(@RequestParam int custId,
                              @RequestParam int amount) {
+
+        if(amount <= 0) return false;
 
         Wallet wallet = walletService.findByCustId(custId);
         walletService.updateWallet(wallet.getCustId(), wallet.getWalletAmount() + amount);
