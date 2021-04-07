@@ -14,6 +14,8 @@ public class WalletController {
     @Autowired
     private WalletService walletService;
 
+    private final Object mutex = new Object();
+
     @PostMapping("/")
     public Wallet saveWallet(@RequestBody Wallet wallet) {
 
@@ -33,23 +35,28 @@ public class WalletController {
     @GetMapping("/getBalance")
     public int getBalance(@RequestParam int custId) {
 
-        Wallet wallet = walletService.findByCustId(custId);
-        return wallet.getWalletAmount();
+        synchronized (mutex) {
+            Wallet wallet = walletService.findByCustId(custId);
+            return wallet.getWalletAmount();
+        }
     }
 
     @GetMapping("/deductAmount")
     public boolean deductAmount(@RequestParam int custId,
                                 @RequestParam int amount) {
 
-        if(amount <= 0) return false;
+        synchronized (mutex) {
 
-        Wallet wallet = walletService.findByCustId(custId);
-        int walletAmount = wallet.getWalletAmount();
-        if(walletAmount >= amount) {
-            walletService.updateWallet(wallet.getCustId(), walletAmount - amount);
-            return true;
+            if (amount <= 0) return false;
+
+            Wallet wallet = walletService.findByCustId(custId);
+            int walletAmount = wallet.getWalletAmount();
+            if (walletAmount >= amount) {
+                walletService.updateWallet(wallet.getCustId(), walletAmount - amount);
+                return true;
+            }
+            return false;
         }
-        return false;
     }
 
     @GetMapping("/addAmount")
