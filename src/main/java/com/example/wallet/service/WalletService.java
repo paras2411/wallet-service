@@ -36,7 +36,7 @@ public class WalletService {
 
     public void feedInitialData() {
 
-        File file = new File("/IDs.txt");
+        File file = new File("/mnt/IDs.txt");
         try {
             Scanner scan = new Scanner(file);
             List<Integer> customers = new ArrayList<Integer>();
