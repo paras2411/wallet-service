@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+
 @RestController
 @RequestMapping("")
 @Slf4j
@@ -15,6 +17,7 @@ public class WalletController {
     private WalletService walletService;
 
     private final Object mutex = new Object();
+    private final HashMap<Integer, Object> custIdMutex = new HashMap<>();
 
     @PostMapping("/")
     public Wallet saveWallet(@RequestBody Wallet wallet) {
@@ -35,10 +38,8 @@ public class WalletController {
     @GetMapping("/getBalance")
     public int getBalance(@RequestParam int custId) {
 
-        synchronized (mutex) {
-            Wallet wallet = walletService.findByCustId(custId);
-            return wallet.getWalletAmount();
-        }
+        Wallet wallet = walletService.findByCustId(custId);
+        return wallet.getWalletAmount();
     }
 
     @GetMapping("/deductAmount")
@@ -46,7 +47,12 @@ public class WalletController {
                                 @RequestParam int amount) {
 
         synchronized (mutex) {
+            if (!custIdMutex.containsKey(custId)) {
+                custIdMutex.put(custId, new Object());
+            }
+        }
 
+        synchronized (custIdMutex.get(custId)) {
             if (amount <= 0) return false;
 
             Wallet wallet = walletService.findByCustId(custId);
@@ -55,8 +61,9 @@ public class WalletController {
                 walletService.updateWallet(wallet.getCustId(), walletAmount - amount);
                 return true;
             }
-            return false;
         }
+
+        return false;
     }
 
     @GetMapping("/addAmount")
@@ -65,8 +72,15 @@ public class WalletController {
 
         if(amount <= 0) return false;
 
-        Wallet wallet = walletService.findByCustId(custId);
-        walletService.updateWallet(wallet.getCustId(), wallet.getWalletAmount() + amount);
+        synchronized (mutex) {
+            if (!custIdMutex.containsKey(custId)) {
+                custIdMutex.put(custId, new Object());
+            }
+        }
+        synchronized (custIdMutex.get(custId)) {
+            Wallet wallet = walletService.findByCustId(custId);
+            walletService.updateWallet(wallet.getCustId(), wallet.getWalletAmount() + amount);
+        }
         return true;
     }
 
