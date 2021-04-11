@@ -35,6 +35,11 @@ public class WalletController {
         walletService.addCustomer(custId);
     }
 
+    /**
+     * Api used to find the wallet balance of the customer
+     * @param custId Id of the customer
+     * @return Integer value of balance
+     */
     @GetMapping("/getBalance")
     public int getBalance(@RequestParam int custId) {
 
@@ -42,6 +47,12 @@ public class WalletController {
         return wallet.getWalletAmount();
     }
 
+    /**
+     * Deduct the amount from the wallet of the customer
+     * @param custId Id of the customer
+     * @param amount Amount to be deducted
+     * @return Boolean value whether amount deducted
+     */
     @GetMapping("/deductAmount")
     public boolean deductAmount(@RequestParam int custId,
                                 @RequestParam int amount) {
@@ -66,6 +77,12 @@ public class WalletController {
         return false;
     }
 
+    /**
+     * Add the amount to the customer wallet
+     * @param custId Id of the customer
+     * @param amount Amount to be added
+     * @return Boolean value whether amount is added
+     */
     @GetMapping("/addAmount")
     public boolean addAmount(@RequestParam int custId,
                              @RequestParam int amount) {
@@ -84,6 +101,9 @@ public class WalletController {
         return true;
     }
 
+    /**
+     * Reset the amount of wallet to initial amount
+     */
     @GetMapping("/reset")
     public void reset() {
 
